@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 51b828529f3c4d027d4488e3d0a420de326c7fc0b4c8f6a1e1d6d90eee5ad8b1
+-- hash: e09eecb217d21a20eb2a5682c427088226e6d8577c32dcf25ae1ebc1af99f367
 
 name:           from-romaji
 version:        0.1.0.0
@@ -28,6 +28,7 @@ source-repository head
 executable from-romaji-exe
   main-is: Main.hs
   other-modules:
+      Tables
       Paths_from_romaji
   hs-source-dirs:
       app
@@ -38,4 +39,6 @@ executable from-romaji-exe
     , random-extras
     , random-fu
     , safe
+    , random
+                        
   default-language: Haskell2010

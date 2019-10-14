@@ -6,96 +6,9 @@ import           Data.List          (intersperse)
 import           Data.Random        (StdRandom (..), runRVar)
 import           Data.Random.Extras (sample)
 import           Safe               (atMay)
+import           System.Random
+import           Tables             (hiraganaTable, baseNumbers)
 
-hiraganaTable :: [[(String, String)]]
-hiraganaTable =
-  [ [ ("あ", "a")
-    , ("い", "i")
-    , ("う", "u")
-    , ("え", "e")
-    , ("お", "o")
-    ]
-  , [ ("か", "ka")
-    , ("き", "ki")
-    , ("く", "ku")
-    , ("け", "ke")
-    , ("こ", "ko")
-    ]
-  , [ ("が", "ga")
-    , ("ぎ", "gi")
-    , ("ぐ", "gu")
-    , ("げ", "ge")
-    , ("ご", "go")
-    ]
-  , [ ("さ", "sa")
-    , ("し", "shi")
-    , ("す", "su")
-    , ("せ", "se")
-    , ("そ", "so")
-    ]
-  , [ ("ざ", "za")
-    , ("じ", "ji")
-    , ("ず", "zu")
-    , ("ぜ", "ze")
-    , ("ぞ", "zo")
-    ]
-  , [ ("た", "ta")
-    , ("ち", "chi")
-    , ("つ", "tsu")
-    , ("て", "te")
-    , ("と", "to")
-    ]
-  , [ ("だ", "da")
-    , ("ぢ", "ji")
-    , ("づ", "zu")
-    , ("で", "de")
-    , ("ど", "do")
-    ]
-  , [ ("な", "na")
-    , ("に", "ni")
-    , ("ぬ", "nu")
-    , ("ね", "ne")
-    , ("の", "no")
-    ]
-  , [ ("は", "ha")
-    , ("ひ", "hi")
-    , ("ふ", "fu")
-    , ("へ", "he")
-    , ("ほ", "ho")
-    ]
-  , [ ("ば", "ba")
-    , ("び", "bi")
-    , ("ぶ", "bu")
-    , ("べ", "be")
-    , ("ぼ", "bo")
-    ]
-  , [ ("ぱ", "pa")
-    , ("ぴ", "pi")
-    , ("ぷ", "pu")
-    , ("ぺ", "pe")
-    , ("ぽ", "po")
-    ]
-  , [ ("ま", "ma")
-    , ("み", "mi")
-    , ("む", "mu")
-    , ("め", "me")
-    , ("も", "mo")
-    ]
-  , [ ("や", "ya")
-    , ("ゆ", "yu")
-    , ("よ", "yo")
-    , ("ら", "ra")
-    , ("り", "ri")
-    ]
-  , [ ("る", "ru")
-    , ("れ", "re")
-    , ("ろ", "ro")
-    , ("わ", "wa")
-    , ("を", "wo")
-    ]
-  , [ ("ん", "n/m")
-    ]
-  ]
 
 (<?>) :: Maybe a -> String -> IO a
 Nothing <?> err = fail err
@@ -128,6 +41,26 @@ showCols cols = do
   putStrLn hiragana
   putStrLn "---------------"
   showCols cols
+
+randomNums :: Int -> IO String
+randomNums x = do
+  g <- newStdGen
+  return $ take x (randomRs ('1', '9') g)
+
+numberWang :: IO ()
+numberWang = do
+  num <- randomNums 1
+  print num
+  attempt <- getLine
+  if attempt == snd (baseNumbers !! (read num - 1))
+    then
+    do
+      putStrLn "That's NUMBERWANG!"
+      numberWang
+  else
+    do
+      putStrLn "Aah, would that it were NumberWang. Alas, it is not."      
+      numberWang 
 
 main :: IO ()
 main = help
