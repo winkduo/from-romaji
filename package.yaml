@@ -33,6 +33,7 @@ executables:
     - -Wall
     dependencies:
     - safe
+    - random
     - random-fu
     - random-extras
     - containers
