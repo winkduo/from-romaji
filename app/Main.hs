@@ -6,8 +6,9 @@ import           Data.List          (intersperse)
 import           Data.Random        (StdRandom (..), runRVar)
 import           Data.Random.Extras (sample)
 import           Safe               (atMay)
-import           System.Random
+import           System.Random      (newStdGen, randomRs)
 import           Tables             (hiraganaTable, baseNumbers)
+import           Text.Read          (readMaybe)
 
 
 (<?>) :: Maybe a -> String -> IO a
@@ -47,20 +48,22 @@ randomNums x = do
   g <- newStdGen
   return $ take x (randomRs ('1', '9') g)
 
+getAnswer :: String -> Maybe String
+getAnswer x = do
+  y <- readMaybe x
+  Prelude.lookup y baseNumbers
+
 numberWang :: IO ()
 numberWang = do
   num <- randomNums 1
   print num
   attempt <- getLine
-  if attempt == snd (baseNumbers !! (read num - 1))
-    then
-    do
-      putStrLn "That's NUMBERWANG!"
-      numberWang
+  let actual = getAnswer num
+  if Just attempt == actual then
+    putStrLn "That's NUMBERWANG!"
   else
-    do
-      putStrLn "Aah, would that it were NumberWang. Alas, it is not."      
-      numberWang 
+    putStrLn "Aah, would that it were NumberWang. Alas, it is not."
+  numberWang
 
 main :: IO ()
 main = help
