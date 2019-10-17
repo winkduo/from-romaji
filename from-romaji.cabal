@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 51b828529f3c4d027d4488e3d0a420de326c7fc0b4c8f6a1e1d6d90eee5ad8b1
+-- hash: 1ecd9aeed09c5bce9512f2b9113f7f5a543340247babfe19302490d254b0958e
 
 name:           from-romaji
 version:        0.1.0.0
@@ -28,6 +28,7 @@ source-repository head
 executable from-romaji-exe
   main-is: Main.hs
   other-modules:
+      Tables
       Paths_from_romaji
   hs-source-dirs:
       app
@@ -35,6 +36,7 @@ executable from-romaji-exe
   build-depends:
       base >=4.7 && <5
     , containers
+    , random
     , random-extras
     , random-fu
     , safe
