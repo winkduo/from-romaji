@@ -100,16 +100,16 @@ baseNumbers =
   [ (1, "ichi")
   , (2, "ni")
   , (3, "san")
-  , (4, "shi") -- yon
+  , (4, "yon")
   , (5, "go")
   , (6, "roku")
   , (7, "nana")
   , (8, "hachi")
   , (9, "kyu")
-  , (10, "juu") 
+  , (10, "juu")
   , (100, "hyaku")
   , (1000, "sen")
-  , (10000, "man") -- actually ichiman but reasons
+  , (10000, "man") 
   ]
 
 

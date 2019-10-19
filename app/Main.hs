@@ -43,6 +43,9 @@ showCols cols = do
   putStrLn "---------------"
   showCols cols
 
+searchNum :: Int -> Maybe String
+searchNum x = Prelude.lookup x baseNumbers
+
 randomNums :: Int -> IO String
 randomNums x = do
   g <- newStdGen
@@ -51,11 +54,13 @@ randomNums x = do
 getAnswer :: String -> Maybe String
 getAnswer x = do
   y <- readMaybe x
-  Prelude.lookup y baseNumbers
+  countInJapanese y
 
 numberWang :: IO ()
 numberWang = do
-  num <- randomNums 1
+  g <- newStdGen
+  let h = take 1 (randomRs ('1', '5') g)
+  num <- randomNums (read h)
   print num
   attempt <- getLine
   let actual = getAnswer num
@@ -64,6 +69,48 @@ numberWang = do
   else
     putStrLn "Aah, would that it were NumberWang. Alas, it is not."
   numberWang
+
+toRevDigits :: Int -> [Int]
+toRevDigits n
+  | n <= 0    = []
+  | otherwise =  d : toRevDigits ds
+     where
+       d  = lastDigit n
+       ds = dropLastDigit n
+       lastDigit     = (`mod` 10)
+       dropLastDigit = (`div` 10)
+
+countInJapanese :: Int -> Maybe String
+countInJapanese x =
+  if searchNum x == Nothing
+    then reverse . drop 5 . reverse <$> genNumbers x
+  else searchNum x 
+
+genNumbers :: Int -> Maybe String
+genNumbers x = foldl look Nothing $ zip [0..] (toRevDigits x)
+    where
+      look :: Maybe String -> (Integer, Int) -> Maybe String
+      look acc (1, 1) = searchNum 10 <> Just " " <> acc      
+      look acc (2, 1) = searchNum 100 <> Just " " <> acc
+      look acc (3, 1) = searchNum 1000 <> Just " " <> acc
+
+      look acc (3, 0) = searchNum 0 <> Just " " <> acc
+      look acc (2, 0) = searchNum 0 <> Just " " <> acc
+      look acc (1, 0) = searchNum 0 <> Just " " <> acc
+
+      look acc (i, v) = searchNum v <> searchNum (10 ^ i) <> Just " " <> acc
+
+digitValues :: Int -> [Int]
+digitValues x = foldl arith [] $ zip [0..] (toRevDigits x)
+    where
+      arith :: [Int] -> (Int, Int) -> [Int]
+      arith acc (i, v) = acc ++ [v * 10 ^ i]
+
+-- If you have a table you want to use other than baseNumbers
+countInJapanese' :: Int -> [(Int, String)] -> String
+countInJapanese' x table = foldl readNumbers "" (reverse $ digitValues x)
+    where
+      readNumbers acc y = acc ++ " " ++ show (Prelude.lookup y table)
 
 main :: IO ()
 main = help
