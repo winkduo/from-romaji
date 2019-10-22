@@ -56,6 +56,9 @@ getAnswer x = do
   y <- readMaybe x
   countInJapanese y
 
+-- `numberWang` generates a digit number (1 to 5) and
+-- using that a random quiz number.
+-- If the guess is equal to the actual translation THAT'S NUMBERWANG!
 numberWang :: IO ()
 numberWang = do
   g <- newStdGen
@@ -70,6 +73,15 @@ numberWang = do
     putStrLn "Aah, would that it were NumberWang. Alas, it is not."
   numberWang
 
+type DigitIndex = Integer
+
+type Digit = Int
+
+type Translation = String
+
+-- Given an Int get its digits in reversed order.
+-- λ> toRevDigits 12345
+-- [5,4,3,2,1]
 toRevDigits :: Int -> [Int]
 toRevDigits n
   | n <= 0    = []
@@ -80,35 +92,54 @@ toRevDigits n
        lastDigit     = (`mod` 10)
        dropLastDigit = (`div` 10)
 
-countInJapanese :: Int -> Maybe String
+-- Given an Int `countInJapanese` checks whether that Int has a baseNumbers entry or not.
+-- If the lookup is unsuccessful then call `genNumbers` function with that number
+-- to try and generate an appropriate response.
+-- (reverse . drop 5 . reverse) here is a little hack to erase _ichi suffix
+countInJapanese :: Int -> Maybe Translation
 countInJapanese x =
   if searchNum x == Nothing
     then reverse . drop 5 . reverse <$> genNumbers x
-  else searchNum x 
+  else searchNum x
 
-genNumbers :: Int -> Maybe String
+-- Given an Int `genNumbers` tries to generate a romaji translation for that number.
+-- We zip [0..] with the input list `toRevDigits x` to get a list of tuples
+-- containing digits in reversed order and their indexes.
+-- look function then uses these tuples and previous outputs to
+-- generate a final translation.
+genNumbers :: Int -> Maybe Translation
 genNumbers x = foldl look Nothing $ zip [0..] (toRevDigits x)
     where
-      look :: Maybe String -> (Integer, Int) -> Maybe String
+      look :: Maybe Translation -> (DigitIndex, Digit) -> Maybe Translation
+      -- Since numbers 10, 100 and 1000 don't get number prefixes
+      -- e.g 10 is juu and not ichi juu
+      -- look function generates translations for them without.
       look acc (1, 1) = searchNum 10 <> Just " " <> acc      
       look acc (2, 1) = searchNum 100 <> Just " " <> acc
       look acc (3, 1) = searchNum 1000 <> Just " " <> acc
-
+      -- Regarding numbers with zeros in between
+      -- e.g 30002
+      -- zeros also gets translated since `searchNum (10 ^ 0)`
+      -- gets evaluated as `searchNum 1`
+      -- This situation is handled with special cases below.
       look acc (3, 0) = searchNum 0 <> Just " " <> acc
       look acc (2, 0) = searchNum 0 <> Just " " <> acc
       look acc (1, 0) = searchNum 0 <> Just " " <> acc
 
       look acc (i, v) = searchNum v <> searchNum (10 ^ i) <> Just " " <> acc
 
-digitValues :: Int -> [Int]
-digitValues x = foldl arith [] $ zip [0..] (toRevDigits x)
+-- Given an Int get its place value, starting with the smallest.
+-- λ> digitValues 12345
+-- [5,40,300,2000,10000]
+placeValue :: Int -> [Int]
+placeValue x = foldl arith [] $ zip [0..] (toRevDigits x)
     where
       arith :: [Int] -> (Int, Int) -> [Int]
       arith acc (i, v) = acc ++ [v * 10 ^ i]
 
 -- If you have a table you want to use other than baseNumbers
-countInJapanese' :: Int -> [(Int, String)] -> String
-countInJapanese' x table = foldl readNumbers "" (reverse $ digitValues x)
+countInJapanese' :: Int -> [(Int, String)] -> Translation
+countInJapanese' x table = foldl readNumbers "" (reverse $ placeValue x)
     where
       readNumbers acc y = acc ++ " " ++ show (Prelude.lookup y table)
 
