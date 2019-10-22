@@ -63,15 +63,19 @@ numberWang :: Int -> IO ()
 numberWang x = do
   g <- newStdGen
   let [h] = take 1 (randomRs (1, x) g)
-  num <- randomNums h
-  print num
-  attempt <- getLine
-  let actual = getAnswer num
-  if Just attempt == actual then
-    putStrLn "That's NUMBERWANG!"
-  else
-    putStrLn "Aah, would that it were NumberWang. Alas, it is not."
-  numberWang x
+  if x > 5
+    then
+        putStrLn "Numbers of six and greater digits are not yet translated."        
+  else do
+    num <- randomNums h
+    print num
+    attempt <- getLine
+    let actual = getAnswer num
+    if Just attempt == actual then
+      putStrLn "That's NUMBERWANG!"
+    else
+      putStrLn "Aah, would that it were NumberWang. Alas, it is not."
+    numberWang x
 
 type DigitIndex = Integer
 
