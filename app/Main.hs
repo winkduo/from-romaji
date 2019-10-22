@@ -59,11 +59,11 @@ getAnswer x = do
 -- `numberWang` generates a digit number (1 to 5) and
 -- using that a random quiz number.
 -- If the guess is equal to the actual translation THAT'S NUMBERWANG!
-numberWang :: IO ()
-numberWang = do
+numberWang :: Int -> IO ()
+numberWang x = do
   g <- newStdGen
-  let h = take 1 (randomRs ('1', '5') g)
-  num <- randomNums (read h)
+  let [h] = take 1 (randomRs (1, x) g)
+  num <- randomNums h
   print num
   attempt <- getLine
   let actual = getAnswer num
@@ -71,7 +71,7 @@ numberWang = do
     putStrLn "That's NUMBERWANG!"
   else
     putStrLn "Aah, would that it were NumberWang. Alas, it is not."
-  numberWang
+  numberWang x
 
 type DigitIndex = Integer
 
