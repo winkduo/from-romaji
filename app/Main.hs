@@ -62,7 +62,7 @@ getAnswer x = do
 numberWang :: Int -> IO ()
 numberWang x = do
   g <- newStdGen
-  let [h] = take 1 (randomRs (1, x) g)
+  let (h:_) = randomRs (1, x) g
   if x > 5
     then
         putStrLn "Numbers of six and greater digits are not yet translated."        
