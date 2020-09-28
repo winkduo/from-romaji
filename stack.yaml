@@ -41,6 +41,7 @@ packages:
 #
 extra-deps:
   - random-extras-0.19
+  - readline-1.0.3.0@sha256:db011062b90fbfbbc8b02666d835742c1d4de1f990a89fc056ef8082f3e3cba0,912
 
 # Override default flag values for local packages and extra-deps
 # flags: {}
